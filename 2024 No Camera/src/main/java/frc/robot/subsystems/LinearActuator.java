@@ -25,6 +25,7 @@ import frc.robot.commonmethods.CommonMethodExtensions;
 public class LinearActuator extends SubsystemBase {
   
   TalonFX mLinearActuator = Robot.mLinearActuatorMotor;
+  private PhotonVision mVision = new PhotonVision();
   CommonMethodExtensions methods = new CommonMethodExtensions();
   PhotonCamera camera = PhotonVision.camera;
 
@@ -81,11 +82,6 @@ public class LinearActuator extends SubsystemBase {
   }
 
   public boolean MoveToSetPoint(double desiredPosition){
-
-    //if(!methods.Deadband(desiredPosition, encoder.getPosition(), 2)){
-
-    if(camera.getLatestResult().hasTargets())
-    {
       if(desiredPosition < Constants.Motors.shooterMin)
     {
       desiredPosition = Constants.Motors.shooterMin;
@@ -98,35 +94,9 @@ public class LinearActuator extends SubsystemBase {
     double speed = controller.calculate(mLinearActuator.getPosition().getValueAsDouble(), desiredPosition);
     mLinearActuator.set(speed);
     return controller.atSetpoint();
-    } else {
-      mLinearActuator.set(0);
-      return true;
     }
 
-    
-  }
-    
 
-  public double regressiveEquation(double distanceToTarget) {
-    double actuatorDistance;
-    if(distanceToTarget < 2){
-      distanceToTarget = 2.000001;
-    }
-
-    SmartDashboard.putNumber("Estimated Distance", distanceToTarget);
-
-    if(distanceToTarget > 3.7)
-    {
-      actuatorDistance = -distanceToTarget-93.4;
-    } else {
-      actuatorDistance = (((Math.sqrt((4750*(distanceToTarget))-9500))*-1));      
-    } 
-
-
-    SmartDashboard.putNumber("estimated angle", actuatorDistance);
-
-    return actuatorDistance;
-  }
 
   public double interpolatingPosition(Double distance)
   {

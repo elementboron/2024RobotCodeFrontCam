@@ -38,7 +38,7 @@ public class AutoShooterAimAtTarget extends Command
     @Override
     public void execute() 
     {  
-        if(PhotonVision.camera.getLatestResult().hasTargets() && PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 4){
+        if(PhotonVision.camera.getLatestResult().hasTargets() && (PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 4 || PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 7)){
         double distance = mVision.getDistanceFromTarget();
         SmartDashboard.putNumber("New Distance", distance);
         mShooter.MoveToSetPoint(mShooter.interpolatingPosition(Double.valueOf(distance)));            
@@ -58,7 +58,7 @@ public class AutoShooterAimAtTarget extends Command
     @Override
     public boolean isFinished() 
     {
-        if(methods.Deadband(mShooter.getPosition(), mShooter.interpolatingPosition(mVision.getDistanceFromTarget()), 2))
+        if(methods.Deadband(mShooter.getPosition(), mShooter.interpolatingPosition(mVision.getDistanceFromTarget()), 1))
         {
             return true;
         } else {

@@ -31,6 +31,7 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
     PhotonCamera camera = PhotonVision.camera;
+    PhotonVision mVision = new PhotonVision();
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -106,9 +107,8 @@ public class Swerve extends SubsystemBase {
 
 
     public void aprilDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
-    if(camera.isConnected() && camera.getLatestResult().hasTargets())
-    {
-        SwerveModuleState[] swerveModuleStates =
+    if(mVision.IsabellasGate())
+    {        SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 

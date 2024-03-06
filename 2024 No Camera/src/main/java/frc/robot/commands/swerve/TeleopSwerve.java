@@ -25,10 +25,12 @@ public class TeleopSwerve extends Command {
     private BooleanSupplier robotCentricSup;
     private BooleanSupplier targetLock;
     private BooleanSupplier noteLock;
+    private PhotonVision mVision;
     private IntakeWrist mWrist;
 
     public TeleopSwerve(Swerve s_Swerve, PhotonVision mVision, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier targetLock, BooleanSupplier noteLock, IntakeWrist mWrist) {
         this.s_Swerve = s_Swerve;
+        this.mVision = mVision;
         addRequirements(s_Swerve);
 
         this.translationSup = translationSup;
@@ -50,9 +52,8 @@ public class TeleopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         /* Drive */
-        if(targetLock.getAsBoolean() && camera.isConnected() && camera.getLatestResult().hasTargets() ){
-            var result = camera.getLatestResult();
-            PhotonTrackedTarget target = result.getBestTarget();
+        if(targetLock.getAsBoolean() && mVision.IsabellasGate() ){
+            PhotonTrackedTarget target = mVision.IsabellaTargeter();
             PIDController controller = new PIDController(0.01,0,0);
             double speed = controller.calculate(target.getYaw(), 0);
 
@@ -62,7 +63,7 @@ public class TeleopSwerve extends Command {
             !robotCentricSup.getAsBoolean(), 
             true
         );
-        } else if (noteLock.getAsBoolean() && backCamera.isConnected() && backCamera.getLatestResult().hasTargets()){
+        } else if (noteLock.getAsBoolean() && mVision.IsabellasGate()){
             var result = backCamera.getLatestResult();
             PhotonTrackedTarget target = result.getBestTarget();
             PIDController controller = new PIDController(0.01,0,0);

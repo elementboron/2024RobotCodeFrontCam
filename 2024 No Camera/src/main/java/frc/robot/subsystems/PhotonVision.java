@@ -15,6 +15,7 @@ import org.photonvision.proto.Photon;
 import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -36,22 +37,18 @@ public class PhotonVision extends SubsystemBase {
 
   final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
 
-  Transform3d robotToCam = new Transform3d(new Translation3d(0.32, 0.085, 0.23), new Rotation3d(0, Math.toRadians(140),0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
+  //Transform3d robotToCam = new Transform3d(new Translation3d(0.32, 0.085, 0.23), new Rotation3d(0, Math.toRadians(140),0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
-  PhotonPoseEstimator photonPoseEstimator = new PhotonPoseEstimator(kTagLayout, PoseStrategy.MULTI_TAG_PNP_ON_COPROCESSOR, camera, robotToCam);
+
 
   public static List<PhotonTrackedTarget> lastSeenTarget;
 
   public static double lastGoodTarget;
 
-  public static double lastXDistance;
-
-  public static double lastYDistance;
-
 
 
   /** Creates a new Limelight. */
-  public PhotonVision() {     
+  public PhotonVision() {   
   }
 
   public boolean HasTargets()
@@ -61,9 +58,6 @@ public class PhotonVision extends SubsystemBase {
 
   }
 
-  public Optional<EstimatedRobotPose> GetEstimatedGlobalPose() {
-      return photonPoseEstimator.update();
-  }
 
   public void UpdateSmartDashboard()
   {
@@ -83,25 +77,24 @@ public class PhotonVision extends SubsystemBase {
 
   public double getDistanceFromTarget()
   {
+    if(IsabellasGate())
+    {
     var result = camera.getLatestResult();
-    if(result.hasTargets()){
-    PhotonTrackedTarget target = result.getBestTarget();    
+    PhotonTrackedTarget target = IsabellaTargeter();
+    if( target == null )
+    {
+      return 0;
+    }   
     double distX = target.getBestCameraToTarget().getX();    
     double distY = target.getBestCameraToTarget().getY();
     lastGoodTarget = Math.abs(Math.sqrt((distX*distX) + (distY*distY)));
     return lastGoodTarget;
     } else {
-      return lastGoodTarget;
+      return 0;
     }
     
   }
 
-  public double getAngleToTarget()
-  {
-    var result = camera.getLatestResult();
-    PhotonTrackedTarget target = result.getBestTarget();
-    return target.getYaw();
-  }
 
   public double getAngleToNote()
   {
@@ -113,6 +106,37 @@ public class PhotonVision extends SubsystemBase {
   {
     BooleanSupplier supplier = () -> camera.getLatestResult().hasTargets();
     return supplier;
+  }
+
+  public boolean IsabellasGate()
+  {
+    if(camera.isConnected())
+    {
+      var result = camera.getLatestResult();
+
+      if(result.hasTargets())
+      {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
+  public PhotonTrackedTarget IsabellaTargeter()
+  {
+    var result = camera.getLatestResult();
+    for (PhotonTrackedTarget i : result.getTargets())
+    {
+      if(i.getFiducialId() == 4 || i.getFiducialId() == 7)
+      {
+        return i;
+      }
+    }
+
+    return result.getBestTarget();
   }
 
   @Override

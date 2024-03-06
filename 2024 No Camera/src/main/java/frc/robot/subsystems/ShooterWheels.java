@@ -25,6 +25,7 @@ public class ShooterWheels extends SubsystemBase {
   public static CANSparkMax mBottomLeftMotor = new CANSparkMax(Constants.Motors.bottomLeftShooterID, MotorType.kBrushless);
   public static CANSparkMax mTopLeftMotor = new CANSparkMax(Constants.Motors.topLeftShooterID, MotorType.kBrushless);
   public static double wheelSpeed = 0.3;
+  private final PhotonVision mVision = new PhotonVision();
 
   public ShooterWheels() {
 
@@ -32,6 +33,8 @@ public class ShooterWheels extends SubsystemBase {
   
   public double interpolatingPosition(Double distance)
   {
+    if(mVision.IsabellasGate())
+    {
       Double[] valuesArray = {
       Double.valueOf(0), Double.valueOf(.175),
       Double.valueOf(1), Double.valueOf(0.2),
@@ -45,6 +48,9 @@ public class ShooterWheels extends SubsystemBase {
     treeMap.put(valuesArray[4], valuesArray[5]);
     treeMap.put(valuesArray[6], valuesArray[7]);
     return treeMap.get(distance);    
+    } else {
+      return 0;
+    }
   }
 
   @Override
@@ -86,6 +92,7 @@ public class ShooterWheels extends SubsystemBase {
     return encoder.getVelocity();
   }
 
+
   public void setTopBottom(double topPercent, double bottomPercent) {
     mTopRightMotor.set(topPercent);
     mBottomRightMotor.set(bottomPercent);
@@ -97,12 +104,4 @@ public class ShooterWheels extends SubsystemBase {
     SmartDashboard.putNumber("Wheel Speeds", getCurrentSpeed());
   }
 
-  public boolean FastEnough(double desiredWheelSpeed)
-  {
-    if(getCurrentSpeed() >= desiredWheelSpeed * 5676){
-      return true;
-    } else {
-      return false;
-    }
-  }
 }

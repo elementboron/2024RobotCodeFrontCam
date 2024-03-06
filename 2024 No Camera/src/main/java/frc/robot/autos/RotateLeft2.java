@@ -47,13 +47,13 @@ import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.WaitUntilCommand;
 
-public class Left2Piece extends SequentialCommandGroup {
+public class RotateLeft2 extends SequentialCommandGroup {
 
-    public Left2Piece(Swerve s_Swerve, PhotonVision s_Vision, LinearActuator mLinearActuator, ShooterWheels mWheels, IntakeDrive mIntake, IntakeWrist mWrist, CommonMethodExtensions methods){
+    public RotateLeft2(Swerve s_Swerve, PhotonVision s_Vision, LinearActuator mLinearActuator, ShooterWheels mWheels, IntakeDrive mIntake, IntakeWrist mWrist, CommonMethodExtensions methods){
 
         TrajectoryConfig config =
             new TrajectoryConfig(
-                    5,
+                    Constants.AutoConstants.kMaxSpeedMetersPerSecond,
                     3)
                 .setKinematics(Constants.Swerve.swerveKinematics);
 
@@ -67,15 +67,6 @@ public class Left2Piece extends SequentialCommandGroup {
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(-1, 0, new Rotation2d(0)),
                 config.setReversed(true));
-        Trajectory secondBackUp =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-0.1, 0)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-0.3, 0, new Rotation2d(0)),
-                config.setReversed(true));
 
         Trajectory pickUpSecondTrajectory =
             TrajectoryGenerator.generateTrajectory(
@@ -86,28 +77,6 @@ public class Left2Piece extends SequentialCommandGroup {
                 // End 3 meters straight ahead of where we started, facing forward
                 new Pose2d(-0.5, 0, new Rotation2d(0)),
                 config.setReversed(true));
-
-        Trajectory pickUpThird =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-0.1, 0)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-4.35, 0, new Rotation2d(0)),
-                config.setReversed(true));
-
-        Trajectory driveToShoot =
-            TrajectoryGenerator.generateTrajectory(
-                // Start at the origin facing the +X direction
-                new Pose2d(0, 0, new Rotation2d(0)),
-                // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(1, 0)),
-                // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4, 0, new Rotation2d(0)),
-                config.setReversed(false));
-
-
         
         var thetaController =
             new ProfiledPIDController(
@@ -125,9 +94,9 @@ public class Left2Piece extends SequentialCommandGroup {
                 s_Swerve::setModuleStates,
                 s_Swerve);
 
-        SwerveControllerCommand BackUpMod =
+        SwerveControllerCommand PickUpSecond =
             new SwerveControllerCommand(
-                secondBackUp,
+                backUpInitial,
                 s_Swerve::getPose,
                 Constants.Swerve.swerveKinematics,
                 new PIDController(Constants.AutoConstants.kPXController, 0, 0),
@@ -136,60 +105,12 @@ public class Left2Piece extends SequentialCommandGroup {
                 s_Swerve::setModuleStates,
                 s_Swerve);
 
-        SwerveControllerCommand PickUpSecond =
-            new SwerveControllerCommand(
-                backUpInitial,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(2, 0, 0),
-                new PIDController(2, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
-
-        SwerveControllerCommand PickUpThird =
-            new SwerveControllerCommand(
-                pickUpThird,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(2, 0, 0),
-                new PIDController(2, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
-        SwerveControllerCommand FinalPickUp =
-            new SwerveControllerCommand(
-                backUpInitial,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(2, 0, 0),
-                new PIDController(2, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
-        SwerveControllerCommand DriveToShoot =
-            new SwerveControllerCommand(
-                driveToShoot,
-                s_Swerve::getPose,
-                Constants.Swerve.swerveKinematics,
-                new PIDController(1, 0, 0),
-                new PIDController(1, 0, 0),
-                thetaController,
-                s_Swerve::setModuleStates,
-                s_Swerve);
-
         addCommands(
             new InstantCommand((() -> s_Swerve.setPose(backUpInitial.getInitialPose()))),
             new InstantCommand((() -> s_Swerve.OneEightyGyro(0))),
-            new AutoWheels(mWheels, 0.3),
+            new AutoWheels(mWheels, 0.3)
+            /*
             BackUpInitial.until(s_Vision.hasTargetSupplier()),
-            new InstantCommand((() -> s_Swerve.setPose(backUpInitial.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.OneEightyGyro(0))),
-
-            BackUpMod,
 
             new AutoSwerveAim(s_Swerve, s_Vision).until(() -> isFinished()),
             new StopRobotAutonomous(s_Swerve),
@@ -230,43 +151,7 @@ public class Left2Piece extends SequentialCommandGroup {
             new WaitCommand(0.5),
             new AutoHarvesterDriveStart(mIntake, -0.6),
             new WaitCommand(0.5),
-            new AutoHarvesterDriveStart(mIntake, 0),
-
-            new InstantCommand((() -> s_Swerve.setPose(pickUpSecondTrajectory.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.OneEightyGyro(25))),
-
-            new ParallelCommandGroup(            
-            PickUpThird,
-            new SequentialCommandGroup(
-            new WaitCommand(1),
-            new WristToggle(mWrist, methods),
-            new AutoHarvesterDriveStart(mIntake, 0.6)                
-            )
-            ),
-            new StopRobotAutonomous(s_Swerve),
-            new AutoHarvesterDriveStart(mIntake, 0),
-            new WristToggle(mWrist, methods).withTimeout(1),
-
-
-            new InstantCommand((() -> s_Swerve.setPose(driveToShoot.getInitialPose()))),
-            new InstantCommand((() -> s_Swerve.OneEightyGyro(0))),
-            DriveToShoot,
-            new StopRobotAutonomous(s_Swerve),
-            
-            new AutoSwerveAim(s_Swerve, s_Vision).until(() -> isFinished()),
-
-            new AutoShooterAimAtTarget(mLinearActuator, s_Vision, methods),
-            new WaitCommand(0.5),
-            new AutoHarvesterDriveStart(mIntake, -0.6),
-            new WaitCommand(0.5),
             new AutoHarvesterDriveStart(mIntake, 0)
-
-
-
-
-
-
-
      
 
 

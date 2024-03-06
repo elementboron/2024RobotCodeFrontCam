@@ -3,7 +3,6 @@ package frc.robot.autos;
 import frc.robot.Constants;
 import frc.robot.Robot;
 import frc.robot.commands.AutoCommands.AutoWheels;
-import frc.robot.commands.AutoCommands.AutoWheelsChecker;
 import frc.robot.commands.AutoCommands.StopRobotAutonomous;
 import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.commands.HarvesterDriveStart;

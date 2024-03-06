@@ -27,15 +27,13 @@ public class ShooterStart extends Command {
   public void execute() {
 
     //mShooter.setPercentOutput(mRightPercentOutput, mLeftPercentOutput, mfeeder);
-    if(PhotonVision.camera.getLatestResult().hasTargets() && PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 4){
+    if(mVision.IsabellasGate()){
       double distance = mVision.getDistanceFromTarget();
       mShooter.setPercentOutput(mShooter.interpolatingPosition(distance), mShooter.interpolatingPosition(distance) * 0.75);
-    } else if(PhotonVision.camera.getLatestResult().hasTargets()) {
-      mShooter.setPercentOutput(0, 0);
     } else {
       mShooter.setPercentOutput(0, 0);
     }
-  }
+    } 
 
   // Called once the command ends or is interrupted.
   @Override

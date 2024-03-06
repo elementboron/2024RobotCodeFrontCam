@@ -40,7 +40,7 @@ public class WristToggle extends Command
         if (mWrist.GetPosition() > 6)
         {
             desiredPose = 0;
-           mWrist.setPercentOutput(-0.3);
+           mWrist.setPercentOutput(-0.15);
         } else if(mWrist.GetPosition() < 1){
             desiredPose = 6;
             mWrist.setPercentOutput(0.2);

@@ -18,7 +18,8 @@ import edu.wpi.first.wpilibj2.command.Command;
 
 
 public class AutoSwerveAim extends Command {    
-    private Swerve s_Swerve;    
+    private Swerve s_Swerve; 
+    private PhotonVision mVision;   
     PIDController controller = new PIDController(0.01,0,0);
 
 
@@ -32,9 +33,10 @@ public class AutoSwerveAim extends Command {
     public void execute() {
             PhotonCamera camera = PhotonVision.camera;
 
+            if(mVision.IsabellasGate()) {
+            
             var result = camera.getLatestResult();
-            if(result.hasTargets()) {
-              PhotonTrackedTarget target = result.getBestTarget();
+            PhotonTrackedTarget target = mVision.IsabellaTargeter();
             double speed = controller.calculate(target.getYaw(), 0);
             controller.setTolerance(2);
 
@@ -46,7 +48,7 @@ public class AutoSwerveAim extends Command {
             );  
             } else 
             {
-                s_Swerve.drive(new Translation2d(0,0), 0, true, true);
+                s_Swerve.drive(new Translation2d(0,0), 1, true, true);
             }
             
             

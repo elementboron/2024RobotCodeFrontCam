@@ -179,7 +179,7 @@ public class RobotContainer {
         ShooterFire.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, -.6));
         WristToggle.onTrue(new WristToggle(mWrist, methods));
 
-        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.05, 0.07, 0.2));
+        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.05, 0.09, 0.2));
 
            
     }
@@ -196,5 +196,7 @@ public class RobotContainer {
         //return AutoBuilder.followPath(path);
         //return new Middle2Piece( s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         return new Left2Piece(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new RotateLeft2(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+
     }
 }

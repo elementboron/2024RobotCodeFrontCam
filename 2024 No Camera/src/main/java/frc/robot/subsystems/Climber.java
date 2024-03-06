@@ -35,7 +35,6 @@ public class Climber extends SubsystemBase {
     mBackClimberMotor.getConfigurator().apply(softLimits);
   }
 
-
   public double GetPosition()
   {
     return mFrontClimberMotor.getPosition().getValueAsDouble();
