@@ -36,7 +36,7 @@ public class ShooterWheels extends SubsystemBase {
     if(mVision.IsabellasGate())
     {
       Double[] valuesArray = {
-      Double.valueOf(0), Double.valueOf(.175),
+      Double.valueOf(0), Double.valueOf(.175), 
       Double.valueOf(1), Double.valueOf(0.2),
       Double.valueOf(1.5), Double.valueOf(0.3),
       Double.valueOf(5), Double.valueOf(0.3)

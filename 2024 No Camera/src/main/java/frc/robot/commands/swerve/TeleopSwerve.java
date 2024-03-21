@@ -53,6 +53,8 @@ public class TeleopSwerve extends Command {
 
         /* Drive */
         if(targetLock.getAsBoolean() && mVision.IsabellasGate() ){
+            s_Swerve.AimAtTargetDrive(translationVal, strafeVal, robotCentricSup, rotationVal);
+            /*
             PhotonTrackedTarget target = mVision.IsabellaTargeter();
             PIDController controller = new PIDController(0.01,0,0);
             double speed = controller.calculate(target.getYaw(), 0);
@@ -63,22 +65,25 @@ public class TeleopSwerve extends Command {
             !robotCentricSup.getAsBoolean(), 
             true
         );
-        } else if (noteLock.getAsBoolean() && mVision.IsabellasGate()){
-            var result = backCamera.getLatestResult();
+        */
+        } else if (noteLock.getAsBoolean() && mVision.IsabellasGateBack()){
+            s_Swerve.AimAtNoteDrive(translationVal, strafeVal, robotCentricSup, rotationVal);
+           /* var result = backCamera.getLatestResult();
             PhotonTrackedTarget target = result.getBestTarget();
-            PIDController controller = new PIDController(0.01,0,0);
-            double speed = controller.calculate(target.getYaw(), 0);
+            PIDController controllerNote = new PIDController(0.0075,0,0.00000000000000);
+            double speed = controllerNote.calculate(target.getYaw(), 0);
 
 
-            s_Swerve.drive(
+            s_Swerve.noteDrive(
             new Translation2d(-translationVal, -strafeVal).times(Constants.Swerve.maxSpeed), 
             speed * Constants.Swerve.maxAngularVelocity, 
-            false, 
+            !robotCentricSup.getAsBoolean(), 
             true
             );
+            */
             
         } else {
-            if(mWrist.GetPosition() < 2 ){
+            if(mWrist.GetPosition() < 4.5 ){
                 s_Swerve.drive(
                 new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
                 rotationVal * Constants.Swerve.maxAngularVelocity, 

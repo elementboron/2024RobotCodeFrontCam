@@ -44,7 +44,7 @@ public class ActivateClimbMotors extends Command
             mClimber.setPercentOutput(0.1);
         }
         */
-    mClimber.setPercentOutput((speedX.getAsDouble() - speedY.getAsDouble()));
+    mClimber.setPercentOutput((speedX.getAsDouble() - speedY.getAsDouble()) *-1);
 
     }
 

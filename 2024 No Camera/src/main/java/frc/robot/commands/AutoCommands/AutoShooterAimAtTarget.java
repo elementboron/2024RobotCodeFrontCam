@@ -29,7 +29,7 @@ public class AutoShooterAimAtTarget extends Command
         mVision = subsystem2;
         this.methods = methods;
         
-        addRequirements(subsystem, subsystem2);
+        addRequirements(subsystem);
     }
 
     @Override
@@ -38,12 +38,10 @@ public class AutoShooterAimAtTarget extends Command
     @Override
     public void execute() 
     {  
-        if(PhotonVision.camera.getLatestResult().hasTargets() && (PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 4 || PhotonVision.camera.getLatestResult().getBestTarget().getFiducialId() == 7)){
+        if(mVision.IsabellasGate()){
         double distance = mVision.getDistanceFromTarget();
         SmartDashboard.putNumber("New Distance", distance);
         mShooter.MoveToSetPoint(mShooter.interpolatingPosition(Double.valueOf(distance)));            
-        } else if (PhotonVision.camera.getLatestResult().hasTargets()){
-            mShooter.MoveToSetPoint(0);
         } else {
             mShooter.setPercentOutput(0);
         }

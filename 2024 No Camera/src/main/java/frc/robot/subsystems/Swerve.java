@@ -8,21 +8,20 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
+import java.util.function.BooleanSupplier;
+import java.util.function.DoubleSupplier;
+
 import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
 
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
-import com.pathplanner.lib.util.PIDConstants;
-import com.pathplanner.lib.util.ReplanningConfig;
 
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -31,6 +30,7 @@ public class Swerve extends SubsystemBase {
     public SwerveModule[] mSwerveMods;
     public Pigeon2 gyro;
     PhotonCamera camera = PhotonVision.camera;
+    PhotonCamera backCamera = PhotonVision.backCamera;
     PhotonVision mVision = new PhotonVision();
 
     public Swerve() {
@@ -103,7 +103,36 @@ public class Swerve extends SubsystemBase {
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], true);        
     }
     }
+    public void noteDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
+    if(mVision.IsabellasGateBack())
+    {        SwerveModuleState[] swerveModuleStates =
+            Constants.Swerve.swerveKinematics.toSwerveModuleStates(
+                fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation, 
+                                    getHeading()
+                                )
+                                : new ChassisSpeeds(
+                                    translation.getX(), 
+                                    translation.getY(), 
+                                    rotation)
+                                );
+        SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
+        if(mVision.IsabellasGateBack())
+        {
+          for(SwerveModule mod : mSwerveMods){
+            mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
+        }   
+        }else {
+            drive(new Translation2d(0,0), 0, false, true);
+        }
+        
+    } else {
+        drive(translation, 0, false, true);
+    }
+    }
 
 
     public void aprilDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
@@ -133,8 +162,46 @@ public class Swerve extends SubsystemBase {
         }
         
     } else {
-        drive(translation, 0, fieldRelative, isOpenLoop);
+        drive(new Translation2d(0,0), 0, false, true);
     }
+    }
+
+    public void AimAtTargetDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
+    {
+        if(mVision.IsabellasGate()){
+            PhotonTrackedTarget target = mVision.IsabellaTargeter();
+            PIDController controller = new PIDController(0.01,0,0);
+            double speed = controller.calculate(target.getYaw(), 0);
+
+            aprilDrive(
+            new Translation2d(-translationVal, -strafeVal).times(Constants.Swerve.maxSpeed), 
+            speed * Constants.Swerve.maxAngularVelocity, 
+            false, 
+            true
+        );
+        } else {
+            drive(new Translation2d(translationVal, strafeVal), rotationVal, !robotCentricSup.getAsBoolean(), true);
+        }
+    }
+
+    public void AimAtNoteDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
+    {
+        if(mVision.IsabellasGateBack()){
+            var result = backCamera.getLatestResult();
+            PhotonTrackedTarget target = result.getBestTarget();
+            PIDController controllerNote = new PIDController(0.0075,0,0.00000000000000);
+            double speed = controllerNote.calculate(target.getYaw(), 0);
+
+
+            noteDrive(
+            new Translation2d(-translationVal, -strafeVal).times(Constants.Swerve.maxSpeed), 
+            speed * Constants.Swerve.maxAngularVelocity, 
+            true, 
+            true
+            );
+        } else {
+            drive(new Translation2d(translationVal, strafeVal), rotationVal, !robotCentricSup.getAsBoolean(), true);
+        }   
     }
 
     
@@ -210,6 +277,7 @@ public class Swerve extends SubsystemBase {
     @Override
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
+        SmartDashboard.putNumber("Heading", swerveOdometry.getPoseMeters().getRotation().getDegrees());
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());

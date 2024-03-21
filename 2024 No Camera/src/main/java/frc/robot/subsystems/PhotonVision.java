@@ -5,34 +5,19 @@
 package frc.robot.subsystems;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.function.BooleanSupplier;
 
 import org.photonvision.*;
-import org.photonvision.utils.*;
-import org.photonvision.PhotonPoseEstimator.PoseStrategy;
-import org.photonvision.proto.Photon;
-import org.photonvision.targeting.PhotonPipelineResult;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTag;
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.apriltag.AprilTagFields;
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
-import edu.wpi.first.math.geometry.Rotation3d;
-import edu.wpi.first.math.geometry.Transform2d;
-import edu.wpi.first.math.geometry.Transform3d;
-import edu.wpi.first.math.geometry.Translation3d;
-import edu.wpi.first.math.geometry.proto.Pose3dProto;
-import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Robot;
 
 public class PhotonVision extends SubsystemBase {
 
-  public static final PhotonCamera camera = new PhotonCamera("ArduCamFront");
+  public static final PhotonCamera camera = new PhotonCamera("ArduCamFront2");
   public static final PhotonCamera backCamera = new PhotonCamera("Pi2Back");
 
   final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
@@ -56,6 +41,18 @@ public class PhotonVision extends SubsystemBase {
     var result = camera.getLatestResult();
     return result.hasTargets();
 
+  }
+
+  public void ShooterCamOn()
+  {
+    backCamera.setDriverMode(true);
+    camera.setDriverMode(false);
+  }
+
+  public void NoteCamOn()
+  {
+    backCamera.setDriverMode(false);
+    camera.setDriverMode(true);
   }
 
 
@@ -125,9 +122,27 @@ public class PhotonVision extends SubsystemBase {
     }
   }
 
+    public boolean IsabellasGateBack()
+  {
+    if(backCamera.isConnected())
+    {
+      var result = backCamera.getLatestResult();
+
+      if(result.hasTargets())
+      {
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+
   public PhotonTrackedTarget IsabellaTargeter()
   {
     var result = camera.getLatestResult();
+    if(IsabellasGate()) {
     for (PhotonTrackedTarget i : result.getTargets())
     {
       if(i.getFiducialId() == 4 || i.getFiducialId() == 7)
@@ -135,8 +150,10 @@ public class PhotonVision extends SubsystemBase {
         return i;
       }
     }
-
     return result.getBestTarget();
+  } else {
+    return result.getBestTarget();
+  }
   }
 
   @Override

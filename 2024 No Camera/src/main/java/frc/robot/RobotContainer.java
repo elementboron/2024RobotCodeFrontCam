@@ -9,6 +9,7 @@ import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
 import edu.wpi.first.wpilibj.GenericHID;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -17,11 +18,13 @@ import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.autos.*;
+import frc.robot.commands.swerve.AutoSwerveAimAtNote;
 //import frc.robot.commands.*;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.AutoCommands.AutoWheels;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -42,52 +45,45 @@ public class RobotContainer {
     private final int leftXAxis = XboxController.Axis.kLeftX.value;
     private final int leftYAxis = XboxController.Axis.kLeftY.value;
     private final int rightXAxis = XboxController.Axis.kRightX.value;
-
-    //swerve buttons
-    private final int zerogyro = XboxController.Button.kBack.value;
-    private final int robotcentric = XboxController.Button.kA.value;
-    private final int shooterFire = XboxController.Button.kX.value;
-    private final int wristToggle = XboxController.Button.kY.value;
-    private final int noteLock = XboxController.Button.kRightStick.value;
-    private final int intakeOn = XboxController.Button.kLeftStick.value;
-
-    //shooter buttons
-    private final int activateShooterWheels = XboxController.Button.kRightBumper.value;
-    private final int reverseShooterWheels = XboxController.Button.kLeftBumper.value;
-
-    //harvester buttons
-    private final int startHarvesterDrive = XboxController.Button.kB.value;
-    private final int reverseHarvesterDrive = XboxController.Button.kStart.value;
-
-    //linear actuator buttons
-    private final int raiseLinearActuator = XboxController.Axis.kRightTrigger.value;
-    private final int lowerLinearActuator = XboxController.Axis.kLeftTrigger.value;
-
-    //wrist buttons
-    private final int raiseWrist = XboxController.Axis.kRightTrigger.value;
-    private final int lowerWrist = XboxController.Axis.kLeftTrigger.value;
-
-    //climber buttons
+    private final int rightStickPress = XboxController.Button.kRightStick.value;
+    private final int leftStickPress = XboxController.Button.kLeftStick.value;
     private final int raiseClimbers = XboxController.Axis.kRightTrigger.value;
     private final int lowerClimbers = XboxController.Axis.kLeftTrigger.value;
+    private final int rightBumper = XboxController.Button.kRightBumper.value;
+    private final int leftBumper = XboxController.Button.kLeftBumper.value;
+    private final int startButton = XboxController.Button.kStart.value;
+    private final int backButton = XboxController.Button.kBack.value;
+    private final int aButton = XboxController.Button.kA.value;
+    private final int xButton = XboxController.Button.kX.value;
+    private final int yButton = XboxController.Button.kY.value;
+    private final int bButton = XboxController.Button.kB.value;
+
+
+    //shooter buttons
+
+
+
 
     /* Driver Buttons */
-    private final JoystickButton zeroGyro = new JoystickButton(driveStick, zerogyro);
+    private final JoystickButton zeroGyro = new JoystickButton(driveStick, backButton);
 
-    private final JoystickButton wristSetPoint = new JoystickButton(operatorStick, zerogyro);
-    private final JoystickButton robotCentric = new JoystickButton(driveStick, robotcentric);
-    private final JoystickButton WristToggle = new JoystickButton(driveStick, wristToggle);
+    private final JoystickButton wristSetPoint = new JoystickButton(operatorStick, backButton);
+    private final JoystickButton robotCentric = new JoystickButton(driveStick, aButton);
+    private final JoystickButton WristToggle = new JoystickButton(driveStick, yButton);
 
-    private final JoystickButton ShooterFire = new JoystickButton(driveStick, shooterFire);
-    private final JoystickButton ShooterCharge = new JoystickButton(driveStick, activateShooterWheels);
-    private final JoystickButton AmpFire = new JoystickButton(operatorStick, activateShooterWheels);
+    private final JoystickButton testShootButton = new JoystickButton(operatorStick, yButton);
 
-    private final JoystickButton ShooterIntake = new JoystickButton(driveStick, reverseShooterWheels);
-    private final JoystickButton HarvesterIntake = new JoystickButton(driveStick, startHarvesterDrive);
-    private final JoystickButton HarvesterFeed = new JoystickButton(driveStick, reverseHarvesterDrive);
-    private final JoystickButton IntakeOn = new JoystickButton(driveStick, intakeOn);
+    private final JoystickButton ShooterFire = new JoystickButton(driveStick, xButton);
+    private final JoystickButton ShooterCharge = new JoystickButton(driveStick, rightBumper);
+    private final JoystickButton AmpFire = new JoystickButton(operatorStick, rightBumper);
 
-    public final JoystickButton NoteLock = new JoystickButton(driveStick, noteLock);
+    private final JoystickButton ShooterIntake = new JoystickButton(driveStick, leftBumper);
+    private final JoystickButton LaunchButton = new JoystickButton(operatorStick, leftBumper);
+    private final JoystickButton HarvesterIntake = new JoystickButton(driveStick, bButton);
+    private final JoystickButton HarvesterFeed = new JoystickButton(driveStick, startButton);
+    private final JoystickButton IntakeOn = new JoystickButton(driveStick, leftStickPress);
+
+    public final JoystickButton NoteLock = new JoystickButton(driveStick, bButton);
 
     
 
@@ -132,14 +128,17 @@ public class RobotContainer {
         mWrist.setDefaultCommand(new WristDrive(mWrist, 0));
 
 
+
         mLinearActuator.setDefaultCommand(
             new StartLinearActuator(
                 mLinearActuator,
                 mVision,
-                () -> driveStick.getRawAxis(raiseLinearActuator),
-                () -> driveStick.getRawAxis(lowerLinearActuator)
+                () -> operatorStick.getRawAxis(leftYAxis),
+                () -> operatorStick.getRawAxis(leftXAxis)
             )
         );
+
+
         mClimber.setDefaultCommand(
             new ActivateClimbMotors(
                 mClimber,
@@ -167,19 +166,29 @@ public class RobotContainer {
 
         //shooter commands
         ShooterCharge.whileTrue(new ShooterStart(m_Wheels, mVision));
+        ShooterCharge.onTrue(new ShooterCamActivate(mVision));
+        //ShooterCharge.onTrue(new ShooterCamActivate(mVision));
         ShooterIntake.whileTrue(new ShooterTuning(m_Wheels, -0.1, -0.1));
         ShooterIntake.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.5));
 
         ShooterCharge.whileTrue(new RepeatCommand(new ShooterAimAtTarget(mLinearActuator, mVision)));
         //ShooterCharge.whileTrue(new RepeatCommand(new ShooterToSetpoint(mLinearActuator, methods, 0)));
 
-        //intake commands
-        IntakeOn.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, .6));
-        NoteLock.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.6));
-        ShooterFire.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, -.6));
-        WristToggle.onTrue(new WristToggle(mWrist, methods));
+        LaunchButton.whileTrue(new ShooterTuning(m_Wheels, 0.25, 0.21));
 
-        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.05, 0.09, 0.2));
+        //intake commands
+        //IntakeOn.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, .6));
+        //NoteLock.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.6));
+        ShooterFire.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, -0.6));
+        WristToggle.onTrue(new WristToggle(mWrist, methods));
+//
+        //NoteLock.onTrue(new NoteCamActivate(mVision));
+
+        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.03, 0.11, 0.2));
+        //testShootButton.whileTrue(new NoteCamActivate(mVision));
+        //testShootButton.whileTrue(new AutoSwerveAimAtNote(s_Swerve, mVision));
+        //NoteLock.onTrue(new NoteCamActivate(mVision));
+        //NoteLock.onFalse(new ShooterCamActivate(mVision));
 
            
     }
@@ -195,8 +204,13 @@ public class RobotContainer {
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         //return AutoBuilder.followPath(path);
         //return new Middle2Piece( s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
-        return new Left2Piece(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new BlueAmpSideNew(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new NoteTracking(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return null;
         //return new RotateLeft2(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new RedAmpSideTesting(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new FivePieceAuto(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        return new RedFarSide3Alt(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
 
     }
 }

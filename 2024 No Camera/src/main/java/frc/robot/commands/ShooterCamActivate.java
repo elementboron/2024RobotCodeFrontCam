@@ -8,25 +8,19 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.subsystems.*;
 
 
-public class ShooterToSetpoint extends Command
+public class ShooterCamActivate extends Command
 {
-    private final LinearActuator mShooter;
-    private final CommonMethodExtensions method;
-    double desiredPose;
+    private final PhotonVision s_PhotonVision;
     
     
 
-    public ShooterToSetpoint(LinearActuator subsystem, CommonMethodExtensions method, double desiredPose)
+    public ShooterCamActivate(PhotonVision subsystem)
     {
-        mShooter = subsystem;
-        this.method = method;
-        this.desiredPose = desiredPose;
+        s_PhotonVision = subsystem;
         
-        addRequirements(subsystem);
     }
 
     @Override
@@ -35,23 +29,12 @@ public class ShooterToSetpoint extends Command
     @Override
     public void execute() 
     {  
-        mShooter.MoveToSetPoint(desiredPose);
-    }
-
-    @Override
-    public void end(boolean interrupted) 
-    {  
-        mShooter.setPercentOutput(0);
+        s_PhotonVision.ShooterCamOn();
     }
 
     @Override
     public boolean isFinished() 
     {
-        if(method.Deadband(mShooter.getPosition(), desiredPose,2)){
-            return true;
-        } else {
-            return false;
-        }
-        
+        return true;
     }
 }

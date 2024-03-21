@@ -5,7 +5,7 @@
 /* the project.                                                               */
 /*----------------------------------------------------------------------------*/
 
-package frc.robot.commands;
+package frc.robot.commands.AutoCommands;
 
 import org.photonvision.PhotonCamera;
 
@@ -15,19 +15,21 @@ import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.subsystems.*;
 
 
-public class ShooterAimAtTarget extends Command
+public class AutoShooterAimAtTargetEndless extends Command
 {
     private final LinearActuator mShooter;
     private final PhotonVision mVision;
+    private final CommonMethodExtensions methods;
     
     
 
-    public ShooterAimAtTarget(LinearActuator subsystem, PhotonVision subsystem2)
+    public AutoShooterAimAtTargetEndless(LinearActuator subsystem, PhotonVision subsystem2, CommonMethodExtensions methods)
     {
         mShooter = subsystem;
         mVision = subsystem2;
+        this.methods = methods;
         
-        addRequirements(subsystem);
+        addRequirements(subsystem, subsystem2);
     }
 
     @Override
@@ -37,14 +39,19 @@ public class ShooterAimAtTarget extends Command
     public void execute() 
     {  
         if(mVision.IsabellasGate()){
-        mVision.ShooterCamOn();
         double distance = mVision.getDistanceFromTarget();
         SmartDashboard.putNumber("New Distance", distance);
         mShooter.MoveToSetPoint(mShooter.interpolatingPosition(Double.valueOf(distance)));            
         } else {
+            mShooter.setPercentOutput(0);
+        }
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
         mShooter.setPercentOutput(0);
     }
-}
 
     @Override
     public boolean isFinished() 

@@ -61,7 +61,6 @@ public class IntakeWrist extends SubsystemBase {
 
   public void DashBoardNumbers(){
     SmartDashboard.putNumber("Havester Wrist Angle", mHarvesterMotor.getPosition().getValueAsDouble());
-
   }
 
   public void setPercentOutput(double motorPercentOutput) {
