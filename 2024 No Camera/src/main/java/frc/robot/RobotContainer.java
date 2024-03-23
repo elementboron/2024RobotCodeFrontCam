@@ -209,8 +209,8 @@ public class RobotContainer {
         //return null;
         //return new RotateLeft2(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return new RedAmpSideTesting(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
-        //return new FivePieceAuto(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
-        return new RedFarSide3Alt(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        return new FivePieceAuto(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new RedFarSide3Alt(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
 
     }
 }

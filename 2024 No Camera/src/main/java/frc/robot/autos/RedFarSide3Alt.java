@@ -76,7 +76,7 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(-3, -0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-5.5, 3, new Rotation2d(-60 * (Math.PI/180))),
+                new Pose2d(-5.3, 3, new Rotation2d(-60 * (Math.PI/180))),
                 config.setReversed(true));
 
         Trajectory backIntoSecond =
@@ -96,7 +96,7 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
                 // Pass through these two interior waypoints, making an 's' curve path
                 List.of(new Translation2d(4, 1)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(4.25, 2.5, new Rotation2d(40 * (Math.PI/180))),
+                new Pose2d(4.25, 2.2, new Rotation2d(40 * (Math.PI/180))),
                 config.setReversed(false));
 
         Trajectory pickUpThird =
@@ -104,9 +104,9 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(0, 1.95)),
+                List.of(new Translation2d(0, 1.8)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-3.3, 2.1, new Rotation2d(0)),
+                new Pose2d(-3.3, 1.8, new Rotation2d(0)),
                 config.setReversed(true));
 
         Trajectory driveIntoThird =
@@ -119,15 +119,15 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
                 new Pose2d(-1, 0, new Rotation2d(0)),
                 config.setReversed(true));
 
-        Trajectory finalPickUp =
+        Trajectory driveToShootThird =
             TrajectoryGenerator.generateTrajectory(
                 // Start at the origin facing the +X direction
                 new Pose2d(0, 0, new Rotation2d(0)),
                 // Pass through these two interior waypoints, making an 's' curve path
-                List.of(new Translation2d(-0.25, 0)),
+                List.of(new Translation2d(1, 0)),
                 // End 3 meters straight ahead of where we started, facing forward
-                new Pose2d(-0.75, 0, new Rotation2d(0)),
-                config.setReversed(true));
+                new Pose2d(4, 0, new Rotation2d(0*(Math.PI/180))),
+                config.setReversed(false));
 
         Trajectory fourthDriveTo =
             TrajectoryGenerator.generateTrajectory(
@@ -213,9 +213,9 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
                 s_Swerve::setModuleStates,
                 s_Swerve);
 
-        SwerveControllerCommand DriveToShoot =
+        SwerveControllerCommand DriveToShootThird =
             new SwerveControllerCommand(
-                driveIntoThird,
+                driveToShootThird,
                 s_Swerve::getPose,
                 Constants.Swerve.swerveKinematics,
                 new PIDController(2, 0, 0),
@@ -282,14 +282,15 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
             ShootSecond,
             new StopRobotAutonomous(s_Swerve),
             new ParallelCommandGroup(
-                new AutoSwerveAim(s_Swerve, s_Vision).withTimeout(1),
-                new AutoShooterAimAtTarget(mLinearActuator, s_Vision, methods).withTimeout(1)
+                new AutoSwerveAim(s_Swerve, s_Vision).withTimeout(1.25),
+                new AutoShooterAimAtTarget(mLinearActuator, s_Vision, methods).withTimeout(1.25)
             ),
 
             new StopRobotAutonomous(s_Swerve),
 
             new InstantCommand((() -> s_Swerve.setPose(backUpInitial.getInitialPose()))),
             new InstantCommand((() -> s_Swerve.zeroHeading())),
+            new WaitCommand(0.2),
             new AutoHarvesterDriveStart(mIntake, -0.6),
             new WaitCommand(0.3),
             new AutoHarvesterDriveStart(mIntake, 0),
@@ -309,7 +310,25 @@ public class RedFarSide3Alt extends SequentialCommandGroup {
             new InstantCommand((() -> s_Swerve.setPose(backUpInitial.getInitialPose()))),
             new InstantCommand((() -> s_Swerve.zeroHeading())),
             BackIntoThird,
-            new StopRobotAutonomous(s_Swerve)
+            new StopRobotAutonomous(s_Swerve),
+
+
+            new InstantCommand((() -> s_Swerve.setPose(backUpInitial.getInitialPose()))),
+            new InstantCommand((() -> s_Swerve.zeroHeading())),
+
+            new WristToggle(mWrist, methods),
+
+            DriveToShootThird,
+            new StopRobotAutonomous(s_Swerve),
+
+            new ParallelCommandGroup(
+                new AutoSwerveAim(s_Swerve, s_Vision).withTimeout(1),
+                new AutoShooterAimAtTarget(mLinearActuator, s_Vision, methods).withTimeout(1)
+            ),
+
+            new WaitCommand(0.1),
+            new AutoHarvesterDriveStart(mIntake, -0.6),
+            new WaitCommand(0.5)
 
             );
     }
