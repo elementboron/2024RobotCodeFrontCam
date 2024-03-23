@@ -167,7 +167,6 @@ public class RobotContainer {
         //shooter commands
         ShooterCharge.whileTrue(new ShooterStart(m_Wheels, mVision));
         ShooterCharge.onTrue(new ShooterCamActivate(mVision));
-        //ShooterCharge.onTrue(new ShooterCamActivate(mVision));
         ShooterIntake.whileTrue(new ShooterTuning(m_Wheels, -0.1, -0.1));
         ShooterIntake.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.5));
 
@@ -199,17 +198,22 @@ public class RobotContainer {
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
+
+            // Load the path you want to follow using its name in the GUI
+        PathPlannerPath path = PathPlannerPath.fromPathFile("New New Path");
+        return AutoBuilder.followPath(path);
         //PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
 
         // Create a path following command using AutoBuilder. This will also trigger event markers.
         //return AutoBuilder.followPath(path);
+        //return new PathPlannerAuto("DriveForward");
         //return new Middle2Piece( s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return new BlueAmpSideNew(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return new NoteTracking(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return null;
         //return new RotateLeft2(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return new RedAmpSideTesting(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
-        return new FivePieceAuto(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
+        //return new FivePieceAuto(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
         //return new RedFarSide3Alt(s_Swerve, mVision, mLinearActuator, m_Wheels, m_HarvesterDrive, mWrist, methods);
 
     }
