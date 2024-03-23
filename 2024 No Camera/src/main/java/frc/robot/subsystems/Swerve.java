@@ -14,9 +14,14 @@ import java.util.function.DoubleSupplier;
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
+import com.ctre.phoenix6.configs.GyroTrimConfigs;
+import com.ctre.phoenix6.configs.MagnetSensorConfigs;
+import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
+import com.ctre.phoenix6.configs.Pigeon2Configurator;
+import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs;
 import com.ctre.phoenix6.hardware.Pigeon2;
-
+import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -41,6 +46,10 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
+        Pigeon2Configurator gyroConfig = gyro.getConfigurator();
+        Pigeon2Configuration features = new Pigeon2Configuration();
+
+
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
 
@@ -271,9 +280,9 @@ public class Swerve extends SubsystemBase {
                 pose);
          }
 
-         public double getHeadingPath() {
-            return -Math.IEEEremainder(gyro.getAngle(), 360);
-        }
+    public double getHeadingPath() {
+        return -Math.IEEEremainder(gyro.getAngle(), 180);
+    }
 
     public Rotation2d getHeading(){
         return getPose().getRotation();
