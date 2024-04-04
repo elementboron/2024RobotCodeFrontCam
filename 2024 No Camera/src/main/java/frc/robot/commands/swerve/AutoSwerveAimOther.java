@@ -38,9 +38,8 @@ public class AutoSwerveAimOther extends Command {
             {
                 var result = PhotonVision.camera.getLatestResult();
 
-                PhotonTrackedTarget target =  mVision.IsabellaTargeter();
-                double speed = controller.calculate(target.getYaw(), 0);
-                controller.setTolerance(2);
+                //PhotonTrackedTarget target =  mVision.IsabellaTargeter();
+                double speed = controller.calculate(mVision.IsabellaAngle(), 0);
                s_Swerve.aprilDrive(
             new Translation2d(0,0), 
             speed * Constants.Swerve.maxAngularVelocity, 
@@ -58,12 +57,7 @@ public class AutoSwerveAimOther extends Command {
     @Override
     public boolean isFinished() {
         {
-            if(controller.atSetpoint())
-            {
-                return true;
-            } else {
-                return false;
-            }
+            return false;
         }
     }
 }

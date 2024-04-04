@@ -156,6 +156,24 @@ public class PhotonVision extends SubsystemBase {
   }
   }
 
+  public double IsabellaAngle()
+  {
+    var result = camera.getLatestResult();
+    if(IsabellasGate()) {
+    for (PhotonTrackedTarget i : result.getTargets())
+    {
+      if(i.getFiducialId() == 4 || i.getFiducialId() == 7)
+      {
+        return i.getYaw();
+      }
+    }
+    return result.getBestTarget().getYaw();
+  } else {
+    return result.getBestTarget().getYaw();
+  }
+  }
+
+
   @Override
   public void periodic() {
   }

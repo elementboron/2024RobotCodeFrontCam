@@ -1,0 +1,116 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 15.0,
+      "y": 0.6
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Activate Slow Shooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Shuttle Grab First"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.1
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Shuttle Grab Second"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Out"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Shuttle Grab Third"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Activate Shooter"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Red Shuttle Shoot Third"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.0
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Swerve At Speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Shooter At Speaker"
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

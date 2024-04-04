@@ -74,7 +74,7 @@ public class LinearActuator extends SubsystemBase {
     {
       mLinearActuator.set(0);
     } else {
-      PIDController controller = new PIDController(0,0,0);
+      PIDController controller = new PIDController(0,0,0); 
       double speed = controller.calculate(mLinearActuator.getPosition().getValueAsDouble(), desiredPose);
       mLinearActuator.set(speed) ;
 
@@ -94,6 +94,29 @@ public class LinearActuator extends SubsystemBase {
     double speed = controller.calculate(mLinearActuator.getPosition().getValueAsDouble(), desiredPosition);
     mLinearActuator.set(speed);
     return controller.atSetpoint();
+    }
+    
+    public void AutoMoveToSetPoint(double desiredPosition, double tolerance){
+        if(desiredPosition < Constants.Motors.shooterMin)
+    {
+      desiredPosition = Constants.Motors.shooterMin;
+    } else if (desiredPosition > Constants.Motors.shooterMax)
+    {
+      desiredPosition = Constants.Motors.shooterMax;
+    } 
+
+    
+    PIDController controller = new PIDController(0.1,0,0.00001);
+    controller.setSetpoint(desiredPosition);
+    controller.setTolerance(tolerance);
+
+    while(!controller.atSetpoint())
+    {
+      double speed = controller.calculate(mLinearActuator.getPosition().getValueAsDouble(), desiredPosition);
+      mLinearActuator.set(speed);
+    }
+
+ 
     }
 
 

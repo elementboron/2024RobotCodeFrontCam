@@ -42,7 +42,7 @@ public class WristToggle extends Command
             desiredPose = 0;
            mWrist.setPercentOutput(-0.3);
         } else if(mWrist.GetPosition() < 1){
-            desiredPose = 6;
+            desiredPose = 6.6;
             mWrist.setPercentOutput(0.3);
         }
  
@@ -51,7 +51,7 @@ public class WristToggle extends Command
     @Override
     public boolean isFinished() 
     {
-        if(methods.Deadband(mWrist.GetPosition(), desiredPose, 2)){
+        if(methods.Deadband(mWrist.GetPosition(), desiredPose, 2.3)){
             mWrist.setPercentOutput(0);
             return true; 
         } else {

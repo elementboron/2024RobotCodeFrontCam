@@ -36,22 +36,19 @@ public class AutoSwerveAim extends Command {
 
             if(mVision.IsabellasGate())
             {            
-                var result = PhotonVision.camera.getLatestResult();
-                PhotonTrackedTarget target =  result.getBestTarget();
-                double speed = controller.calculate(target.getYaw(), 0);
-                controller.setTolerance(2);
-               s_Swerve.aprilDrive(
-            new Translation2d(0,0), 
-            speed * Constants.Swerve.maxAngularVelocity, 
-            false, 
-            true
-            );   
+               s_Swerve.aprilDrive(new Translation2d(0,0), 0, false, true);
             } else {
                 s_Swerve.drive(new Translation2d(0,0), 0, false, true);
             }
             
 
             
+    }
+
+    @Override
+    public void end(boolean interrupted)
+    {
+        s_Swerve.drive(new Translation2d(0,0), 0, false, true);
     }
 
     @Override

@@ -2,28 +2,36 @@ package frc.robot;
 
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import com.pathplanner.lib.path.PathPlannerPath;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import com.revrobotics.CANSparkMax;
 
 import edu.wpi.first.apriltag.AprilTagFieldLayout;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import edu.wpi.first.wpilibj2.command.RepeatCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.autos.*;
+import frc.robot.commands.swerve.AutoSwerveAim;
 import frc.robot.commands.swerve.AutoSwerveAimAtNote;
+import frc.robot.commands.swerve.AutoSwerveAimOther;
 //import frc.robot.commands.*;
 import frc.robot.commands.swerve.TeleopSwerve;
 import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.subsystems.*;
 import frc.robot.commands.*;
+import frc.robot.commands.AutoCommands.AutoHarvesterDriveStart;
+import frc.robot.commands.AutoCommands.AutoShooterAimAtTarget;
 import frc.robot.commands.AutoCommands.AutoWheels;
 
 /**
@@ -79,7 +87,7 @@ public class RobotContainer {
 
     private final JoystickButton ShooterIntake = new JoystickButton(driveStick, leftBumper);
     private final JoystickButton LaunchButton = new JoystickButton(operatorStick, leftBumper);
-    private final JoystickButton HarvesterIntake = new JoystickButton(driveStick, bButton);
+    private final JoystickButton ManualShoot = new JoystickButton(operatorStick, bButton);
     private final JoystickButton HarvesterFeed = new JoystickButton(driveStick, startButton);
     private final JoystickButton IntakeOn = new JoystickButton(driveStick, leftStickPress);
 
@@ -95,23 +103,50 @@ public class RobotContainer {
     private final double shooterWheelSpeed = 0.3;
 
     /* Subsystems */
-    private final Swerve s_Swerve = new Swerve();
+    private final Swerve mSwerve = new Swerve();
     private final ShooterWheels m_Wheels = new ShooterWheels();
-    private final IntakeDrive m_HarvesterDrive = new IntakeDrive();
+    private final IntakeDrive mIntakeDrive = new IntakeDrive();
     private final LinearActuator mLinearActuator = new LinearActuator();
     private final IntakeWrist mWrist = new IntakeWrist();
     private final CommonMethodExtensions methods = new CommonMethodExtensions();
     private final PhotonVision mVision = new PhotonVision();
     private final Climber mClimber = new Climber();
+    private final Blinkin mBlinkin = new Blinkin();
     
     /* Limelight Values */
 
 
     /** The container for the robot. Contains subsystems, OI devices, and commands. */
     public RobotContainer() {
-        s_Swerve.setDefaultCommand(
+
+        mBlinkin.setDefaultCommand(new AutoColor(mBlinkin));
+
+        NamedCommands.registerCommand("Reset Odometry", new InstantCommand(()-> mSwerve.setPose(new Pose2d(1.2, 5.5, new Rotation2d(0)))));
+        NamedCommands.registerCommand("Wrist Toggle", new WristToggle(mWrist, methods));
+        NamedCommands.registerCommand("Intake In", new AutoHarvesterDriveStart(mIntakeDrive, 0.6));
+        NamedCommands.registerCommand("Intake Out", new AutoHarvesterDriveStart(mIntakeDrive, -0.6));
+        NamedCommands.registerCommand("Aim Swerve At Speaker", new AutoSwerveAim(mSwerve, mVision));
+        NamedCommands.registerCommand("Other Aim Swerve At Speaker", new AutoSwerveAimOther(mSwerve, mVision));
+
+        NamedCommands.registerCommand("Aim Shooter At Speaker", new AutoShooterAimAtTarget(mLinearActuator, mVision, methods));
+        NamedCommands.registerCommand("Shooter To Setpoint", new ShooterToSetpoint(mLinearActuator, methods, 60));
+        NamedCommands.registerCommand("Activate Shooter", new AutoWheels(m_Wheels, 0.3));
+        NamedCommands.registerCommand("Activate Slow Shooter", new AutoWheels(m_Wheels, 0.25));
+        NamedCommands.registerCommand("Shooter To -45", new RepeatCommand(new ShooterToSetpoint(mLinearActuator, methods, -48)));
+        NamedCommands.registerCommand("Shooter To -100", new RepeatCommand(new ShooterToSetpoint(mLinearActuator, methods, -75)));
+
+
+       
+
+
+
+
+
+
+
+        mSwerve.setDefaultCommand(
             new TeleopSwerve(
-                s_Swerve, 
+                mSwerve, 
                 mVision,  
                 () -> Math.pow(-desiredspeed*driveStick.getRawAxis(leftYAxis), 3), 
                 () -> Math.pow(-desiredspeed*driveStick.getRawAxis(leftXAxis), 3),
@@ -124,7 +159,7 @@ public class RobotContainer {
         );
 
         m_Wheels.setDefaultCommand(new ShooterStop(m_Wheels, 0 , 0));
-        m_HarvesterDrive.setDefaultCommand(new HarvesterDriveStart(m_HarvesterDrive, 0));
+        mIntakeDrive.setDefaultCommand(new HarvesterDriveStart(mIntakeDrive, 0));
         mWrist.setDefaultCommand(new WristDrive(mWrist, 0));
 
 
@@ -162,28 +197,32 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
         /* Driver Buttons */
-        zeroGyro.onTrue(new InstantCommand(() -> s_Swerve.zeroHeading()));
+        zeroGyro.onTrue(new InstantCommand(() -> mSwerve.zeroHeading()));
 
         //shooter commands
         ShooterCharge.whileTrue(new ShooterStart(m_Wheels, mVision));
         ShooterCharge.onTrue(new ShooterCamActivate(mVision));
         ShooterIntake.whileTrue(new ShooterTuning(m_Wheels, -0.1, -0.1));
-        ShooterIntake.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.5));
+        ShooterIntake.whileTrue(new HarvesterDriveStart(mIntakeDrive, 0.5));
 
         ShooterCharge.whileTrue(new RepeatCommand(new ShooterAimAtTarget(mLinearActuator, mVision)));
         //ShooterCharge.whileTrue(new RepeatCommand(new ShooterToSetpoint(mLinearActuator, methods, 0)));
 
-        LaunchButton.whileTrue(new ShooterTuning(m_Wheels, 0.25, 0.21));
+        LaunchButton.whileTrue(new ShooterTuning(m_Wheels, 0.25, 0.21).alongWith(new TeleopShooterToSetpoint(mLinearActuator, methods, -30)));
+        ManualShoot.whileTrue(new ShooterTuning(m_Wheels, 0.25, 0.21).alongWith(new TeleopShooterToSetpoint(mLinearActuator, methods, 38)));
 
         //intake commands
         //IntakeOn.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, .6));
         //NoteLock.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, 0.6));
-        ShooterFire.whileTrue(new HarvesterDriveStart(m_HarvesterDrive, -0.6));
+        ShooterFire.whileTrue(new HarvesterDriveStart(mIntakeDrive, -0.6));
         WristToggle.onTrue(new WristToggle(mWrist, methods));
-//
         //NoteLock.onTrue(new NoteCamActivate(mVision));
 
-        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.03, 0.11, 0.2));
+        //AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.03, 0.11, 0.2).alongWith(new TeleopShooterToSetpoint(mLinearActuator, methods, 38.7)));
+        AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.03, 0.11, 0.2).alongWith(new TeleopShooterToSetpoint(mLinearActuator, methods, 36.7)));
+
+       //AmpFire.whileTrue(new ShooterAmp(m_Wheels, 0.06, 0.17, 0.2));
+
         //testShootButton.whileTrue(new NoteCamActivate(mVision));
         //testShootButton.whileTrue(new AutoSwerveAimAtNote(s_Swerve, mVision));
         //NoteLock.onTrue(new NoteCamActivate(mVision));
@@ -200,8 +239,9 @@ public class RobotContainer {
     public Command getAutonomousCommand() {
 
             // Load the path you want to follow using its name in the GUI
-        PathPlannerPath path = PathPlannerPath.fromPathFile("New New Path");
-        return AutoBuilder.followPath(path);
+        //PathPlannerPath path = PathPlannerPath.fromPathFile("New Path");
+        //return AutoBuilder.followPath(path);
+        return AutoBuilder.buildAuto("Time Save Red");
         //PathPlannerPath path = PathPlannerPath.fromPathFile("Example Path");
 
         // Create a path following command using AutoBuilder. This will also trigger event markers.

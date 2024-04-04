@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.Swerve;
+import frc.robot.subsystems.Blinkin;
 import frc.robot.subsystems.Climber;
 import frc.robot.subsystems.IntakeWrist;
 import frc.robot.subsystems.LinearActuator;
@@ -53,6 +54,7 @@ public class Robot extends TimedRobot {
   public ShooterWheels mWheels = new ShooterWheels();
   public Climber mClimber = new Climber();
   public Swerve mSwerve = new Swerve();
+  public Blinkin mBlinkin = new Blinkin();
 
   private Command m_autonomousCommand;
 
@@ -97,6 +99,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Limit Switch", toplimitSwitch.get());
     mClimber.Dashboard();
     mWheels.DashboardNumbers();
+    mBlinkin.SmartDashboard();
 
     // Runs the Scheduler.  This is responsible for polling buttons, adding newly-scheduled
     // commands, running already-scheduled commands, removing finished or interrupted commands,

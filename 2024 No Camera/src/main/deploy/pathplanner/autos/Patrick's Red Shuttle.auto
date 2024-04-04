@@ -1,0 +1,68 @@
+{
+  "version": 1.0,
+  "startingPose": {
+    "position": {
+      "x": 14.922011698516977,
+      "y": 0.85
+    },
+    "rotation": 0
+  },
+  "command": {
+    "type": "sequential",
+    "data": {
+      "commands": [
+        {
+          "type": "named",
+          "data": {
+            "name": "Activate Slow Shooter"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Patrick Shuttle"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Patrick Shuffle"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Shooter To -45"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Out"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        }
+      ]
+    }
+  },
+  "folder": null,
+  "choreoAuto": false
+}

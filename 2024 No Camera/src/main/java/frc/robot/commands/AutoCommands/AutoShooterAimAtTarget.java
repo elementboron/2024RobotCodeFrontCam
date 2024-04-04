@@ -56,7 +56,7 @@ public class AutoShooterAimAtTarget extends Command
     @Override
     public boolean isFinished() 
     {
-        if(methods.Deadband(mShooter.getPosition(), mShooter.interpolatingPosition(mVision.getDistanceFromTarget()), 1))
+        if(methods.Deadband(mShooter.getPosition(), mShooter.interpolatingPosition(mVision.getDistanceFromTarget()), 0.1))
         {
             return true;
         } else {

@@ -12,7 +12,7 @@ import frc.robot.commonmethods.CommonMethodExtensions;
 import frc.robot.subsystems.*;
 
 
-public class ShooterToSetpoint extends Command
+public class TeleopShooterToSetpoint extends Command
 {
     private final LinearActuator mShooter;
     private final CommonMethodExtensions method;
@@ -20,7 +20,7 @@ public class ShooterToSetpoint extends Command
     
     
 
-    public ShooterToSetpoint(LinearActuator subsystem, CommonMethodExtensions method, double desiredPose)
+    public TeleopShooterToSetpoint(LinearActuator subsystem, CommonMethodExtensions method, double desiredPose)
     {
         mShooter = subsystem;
         this.method = method;
@@ -47,7 +47,7 @@ public class ShooterToSetpoint extends Command
     @Override
     public boolean isFinished() 
     {
-        return true;
+        return false;
         
     }
 }

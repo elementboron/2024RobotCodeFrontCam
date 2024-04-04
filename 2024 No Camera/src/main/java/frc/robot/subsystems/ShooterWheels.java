@@ -10,6 +10,7 @@ import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonPipelineResult;
 
 import com.ctre.phoenix6.*;
+import com.ctre.phoenix6.hardware.TalonFX;
 
 import edu.wpi.first.math.interpolation.InterpolatingDoubleTreeMap;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -24,6 +25,7 @@ public class ShooterWheels extends SubsystemBase {
   public static CANSparkMax mTopRightMotor = new CANSparkMax(Constants.Motors.topRightShooterID, MotorType.kBrushless);
   public static CANSparkMax mBottomLeftMotor = new CANSparkMax(Constants.Motors.bottomLeftShooterID, MotorType.kBrushless);
   public static CANSparkMax mTopLeftMotor = new CANSparkMax(Constants.Motors.topLeftShooterID, MotorType.kBrushless);
+  public static TalonFX mBarMotor = new TalonFX(Constants.Motors.barID);
   public static double wheelSpeed = 0.3;
   private final PhotonVision mVision = new PhotonVision();
 
@@ -63,6 +65,7 @@ public class ShooterWheels extends SubsystemBase {
     mBottomRightMotor.set(rightPercentOutput);
     mTopLeftMotor.set(leftPercentOutput);
     mBottomLeftMotor.set(leftPercentOutput);
+    mBarMotor.set(rightPercentOutput);
   }
 
   public void Config()
@@ -98,6 +101,7 @@ public class ShooterWheels extends SubsystemBase {
     mBottomRightMotor.set(bottomPercent);
     mTopLeftMotor.set(topPercent);
     mBottomLeftMotor.set(bottomPercent);
+    mBarMotor.set(0.25);
   }
 
   public void DashboardNumbers() {

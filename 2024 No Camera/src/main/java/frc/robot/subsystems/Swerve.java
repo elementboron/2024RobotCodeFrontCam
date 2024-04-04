@@ -9,19 +9,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 
 import java.util.function.BooleanSupplier;
-import java.util.function.DoubleSupplier;
-
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import com.ctre.phoenix6.configs.GyroTrimConfigs;
-import com.ctre.phoenix6.configs.MagnetSensorConfigs;
-import com.ctre.phoenix6.configs.MountPoseConfigs;
 import com.ctre.phoenix6.configs.Pigeon2Configuration;
-import com.ctre.phoenix6.configs.Pigeon2Configurator;
-import com.ctre.phoenix6.configs.Pigeon2FeaturesConfigs;
 import com.ctre.phoenix6.hardware.Pigeon2;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.util.HolonomicPathFollowerConfig;
 import com.pathplanner.lib.util.PIDConstants;
@@ -46,9 +38,6 @@ public class Swerve extends SubsystemBase {
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
-        Pigeon2Configurator gyroConfig = gyro.getConfigurator();
-        Pigeon2Configuration features = new Pigeon2Configuration();
-
 
         gyro.getConfigurator().apply(new Pigeon2Configuration());
         gyro.setYaw(0);
@@ -64,7 +53,7 @@ public class Swerve extends SubsystemBase {
         
         AutoBuilder.configureHolonomic(
             this::getPose, // Robot pose supplier
-            this::resetOdometry, // Method to reset odometry (will be called if your auto has a starting pose)
+            this::setPose, // Method to reset odometry (will be called if your auto has a starting pose)
             this::getChassisSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             this::plannerDrive, // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds
             new HolonomicPathFollowerConfig( // HolonomicPathFollowerConfig, this should likely live in your Constants class
@@ -169,22 +158,31 @@ public class Swerve extends SubsystemBase {
 
     public void aprilDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
     if(mVision.IsabellasGate())
-    {        SwerveModuleState[] swerveModuleStates =
+    {        
+        PIDController controller = new PIDController(0.01,0,0);
+
+        var result = PhotonVision.camera.getLatestResult();
+        PhotonTrackedTarget target =  mVision.IsabellaTargeter();
+        double speed = controller.calculate(target.getYaw(), 0);
+        controller.setTolerance(0.1);
+        
+        
+        SwerveModuleState[] swerveModuleStates =
             Constants.Swerve.swerveKinematics.toSwerveModuleStates(
                 fieldRelative ? ChassisSpeeds.fromFieldRelativeSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
-                                    rotation, 
+                                    speed*Constants.Swerve.maxAngularVelocity, 
                                     getHeading()
                                 )
                                 : new ChassisSpeeds(
                                     translation.getX(), 
                                     translation.getY(), 
-                                    rotation)
+                                    speed * Constants.Swerve.maxAngularVelocity)
                                 );
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, Constants.Swerve.maxSpeed);
 
-        if(camera.getLatestResult().hasTargets())
+        if(mVision.IsabellasGate())
         {
           for(SwerveModule mod : mSwerveMods){
             mod.setDesiredState(swerveModuleStates[mod.moduleNumber], isOpenLoop);
@@ -201,13 +199,10 @@ public class Swerve extends SubsystemBase {
     public void AimAtTargetDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
     {
         if(mVision.IsabellasGate()){
-            PhotonTrackedTarget target = mVision.IsabellaTargeter();
-            PIDController controller = new PIDController(0.01,0,0);
-            double speed = controller.calculate(target.getYaw(), 0);
 
             aprilDrive(
             new Translation2d(-translationVal, -strafeVal).times(Constants.Swerve.maxSpeed), 
-            speed * Constants.Swerve.maxAngularVelocity, 
+            0, 
             false, 
             true
         );
@@ -268,6 +263,15 @@ public class Swerve extends SubsystemBase {
         return swerveOdometry.getPoseMeters();
     }
 
+    public boolean IsRedTeam()
+    {
+        var alliance = DriverStation.getAlliance();
+                if (alliance.isPresent()) {
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }
+                return false;
+            }
+
     public void setPose(Pose2d pose) {
         swerveOdometry.resetPosition(getGyroYaw(), getModulePositions(), pose);
     }
@@ -281,7 +285,7 @@ public class Swerve extends SubsystemBase {
          }
 
     public double getHeadingPath() {
-        return -Math.IEEEremainder(gyro.getAngle(), 180);
+        return -Math.IEEEremainder(gyro.getAccumGyroZ().getValueAsDouble(), 360);
     }
 
     public Rotation2d getHeading(){
