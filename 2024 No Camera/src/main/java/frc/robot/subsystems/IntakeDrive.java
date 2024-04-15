@@ -15,7 +15,8 @@ public class IntakeDrive extends SubsystemBase {
 
   public IntakeDrive() {
     mHarvesterMotor.restoreFactoryDefaults();
-    mHarvesterMotor.setSmartCurrentLimit(40);
+    mHarvesterMotor.setSmartCurrentLimit(25);
+    mHarvesterMotor.burnFlash();
   }
 
 

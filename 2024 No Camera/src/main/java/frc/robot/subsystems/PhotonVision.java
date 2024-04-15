@@ -10,17 +10,18 @@ import java.util.function.BooleanSupplier;
 import org.photonvision.*;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
-import edu.wpi.first.apriltag.AprilTagFieldLayout;
-import edu.wpi.first.apriltag.AprilTagFields;
+import edu.wpi.first.math.geometry.Rotation3d;
+import edu.wpi.first.math.geometry.Transform3d;
+import edu.wpi.first.math.geometry.Translation3d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class PhotonVision extends SubsystemBase {
 
   public static final PhotonCamera camera = new PhotonCamera("ArduCamFront2");
-  public static final PhotonCamera backCamera = new PhotonCamera("Pi2Back");
+  public static final PhotonCamera backCamera = new PhotonCamera("Pi2Back2");
 
-  final AprilTagFieldLayout kTagLayout = AprilTagFields.kDefaultField.loadAprilTagLayoutField();
+  Transform3d robotToCam = new Transform3d(new Translation3d(0.5, 0.0, 0.5), new Rotation3d(0,0,0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 
   //Transform3d robotToCam = new Transform3d(new Translation3d(0.32, 0.085, 0.23), new Rotation3d(0, Math.toRadians(140),0)); //Cam mounted facing forward, half a meter forward of center, half a meter up from center.
 

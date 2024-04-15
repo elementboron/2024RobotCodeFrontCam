@@ -35,6 +35,8 @@ public class Swerve extends SubsystemBase {
     PhotonCamera camera = PhotonVision.camera;
     PhotonCamera backCamera = PhotonVision.backCamera;
     PhotonVision mVision = new PhotonVision();
+    ShooterWheels mShooterWheels = new ShooterWheels();
+
 
     public Swerve() {
         gyro = new Pigeon2(Constants.Swerve.pigeonID);
@@ -159,12 +161,20 @@ public class Swerve extends SubsystemBase {
     public void aprilDrive(Translation2d translation, double rotation, boolean fieldRelative, boolean isOpenLoop) {
     if(mVision.IsabellasGate())
     {        
-        PIDController controller = new PIDController(0.01,0,0);
+        PIDController controller = new PIDController(0.012,0,0);
 
         var result = PhotonVision.camera.getLatestResult();
         PhotonTrackedTarget target =  mVision.IsabellaTargeter();
-        double speed = controller.calculate(target.getYaw(), 0);
-        controller.setTolerance(0.1);
+        double speed;
+        if(mVision.IsabellasGate())
+        {
+            speed = controller.calculate(target.getYaw(), 0); 
+        } else {
+            speed = rotation * Constants.Swerve.maxAngularVelocity;
+        }
+
+        
+        controller.setTolerance(0.03);
         
         
         SwerveModuleState[] swerveModuleStates =
@@ -211,24 +221,45 @@ public class Swerve extends SubsystemBase {
         }
     }
 
-    public void AimAtNoteDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
+    public void AimAtCornerDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
     {
-        if(mVision.IsabellasGateBack()){
-            var result = backCamera.getLatestResult();
-            PhotonTrackedTarget target = result.getBestTarget();
-            PIDController controllerNote = new PIDController(0.0075,0,0.00000000000000);
-            double speed = controllerNote.calculate(target.getYaw(), 0);
+            PIDController controllerNote = new PIDController(0.008,0,0.0000001);
+            controllerNote.setTolerance(1);
+            controllerNote.enableContinuousInput(-180, 180);
+            double speed = controllerNote.calculate(swerveOdometry.getPoseMeters().getRotation().getDegrees(), 135);
+            noteDrive(new Translation2d(-translationVal, -strafeVal), speed * Constants.Swerve.maxSpeed, false, false);
 
-
-            noteDrive(
-            new Translation2d(-translationVal, -strafeVal).times(Constants.Swerve.maxSpeed), 
+            drive(
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
             speed * Constants.Swerve.maxAngularVelocity, 
             true, 
             true
             );
+    }
+
+    public void AimAtNoteDrive(double translationVal, double strafeVal, BooleanSupplier robotCentricSup, double rotationVal)
+    {
+        if(mVision.IsabellasGateBack())
+        {
+           PIDController controllerNote = new PIDController(0.01,0,0.00001);
+            PhotonTrackedTarget target = PhotonVision.backCamera.getLatestResult().getBestTarget();
+            controllerNote.setTolerance(18);
+
+            double speed = controllerNote.calculate(target.getYaw(), 0);
+            
+            noteDrive(new Translation2d(-translationVal, -strafeVal), speed * Constants.Swerve.maxSpeed, false, false);
+            
+
+            
         } else {
-            drive(new Translation2d(translationVal, strafeVal), rotationVal, !robotCentricSup.getAsBoolean(), true);
-        }   
+            drive(
+            new Translation2d(translationVal, strafeVal).times(Constants.Swerve.maxSpeed), 
+            rotationVal, 
+            true, 
+            true
+            ); 
+        }
+            
     }
 
     
@@ -321,11 +352,22 @@ public class Swerve extends SubsystemBase {
         }
     }
 
+    public void AimAtCorner()
+    {
+        PIDController controller = new PIDController(0.1, 0, 0);
+        double heading = swerveOdometry.getPoseMeters().getRotation().getDegrees();
+        double speed = controller.calculate(heading, -30);
+
+    }
+
     
     @Override
     public void periodic(){
         swerveOdometry.update(getGyroYaw(), getModulePositions());
         SmartDashboard.putNumber("Heading", swerveOdometry.getPoseMeters().getRotation().getDegrees());
+        SmartDashboard.putNumber("Estimated X", swerveOdometry.getPoseMeters().getX());
+        SmartDashboard.putNumber("Estimated Y", swerveOdometry.getPoseMeters().getY());
+
 
         for(SwerveModule mod : mSwerveMods){
             SmartDashboard.putNumber("Mod " + mod.moduleNumber + " CANcoder", mod.getCANcoder().getDegrees());

@@ -8,6 +8,8 @@ import frc.robot.subsystems.Swerve;
 import java.util.function.BooleanSupplier;
 import java.util.function.DoubleSupplier;
 
+import javax.lang.model.util.ElementScanner14;
+
 import org.photonvision.PhotonCamera;
 import org.photonvision.targeting.PhotonTrackedTarget;
 
@@ -27,8 +29,9 @@ public class TeleopSwerve extends Command {
     private BooleanSupplier noteLock;
     private PhotonVision mVision;
     private IntakeWrist mWrist;
+    private DoubleSupplier mBumper;
 
-    public TeleopSwerve(Swerve s_Swerve, PhotonVision mVision, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier targetLock, BooleanSupplier noteLock, IntakeWrist mWrist) {
+    public TeleopSwerve(Swerve s_Swerve, PhotonVision mVision, DoubleSupplier translationSup, DoubleSupplier strafeSup, DoubleSupplier rotationSup, BooleanSupplier robotCentricSup, BooleanSupplier targetLock, BooleanSupplier noteLock, IntakeWrist mWrist, DoubleSupplier mBumper) {
         this.s_Swerve = s_Swerve;
         this.mVision = mVision;
         addRequirements(s_Swerve);
@@ -40,6 +43,7 @@ public class TeleopSwerve extends Command {
         this.targetLock = targetLock;
         this.noteLock = noteLock;
         this.mWrist = mWrist;
+        this.mBumper = mBumper;
     }
 
     @Override
@@ -50,14 +54,16 @@ public class TeleopSwerve extends Command {
         double rotationVal = MathUtil.applyDeadband(rotationSup.getAsDouble(), Constants.stickDeadband);
 
         /* Drive */
-        if(targetLock.getAsBoolean()){
+        if(targetLock.getAsBoolean() && mVision.IsabellasGate()){
 
             s_Swerve.AimAtTargetDrive(translationVal, strafeVal, robotCentricSup, rotationVal);
             
-        } else if (noteLock.getAsBoolean()){
+        } else if (mBumper.getAsDouble() > 0.1){
 
-            s_Swerve.AimAtNoteDrive(translationVal, strafeVal, robotCentricSup, rotationVal);
+            s_Swerve.AimAtCornerDrive(translationVal, strafeVal, robotCentricSup, rotationVal);
             
+        } else  if (noteLock.getAsBoolean()) {
+            s_Swerve.AimAtNoteDrive(translationVal, strafeVal, robotCentricSup, 0);
         } else {
 
             if(mWrist.GetPosition() < 4.5 ){
@@ -75,6 +81,7 @@ public class TeleopSwerve extends Command {
                 true
             ); 
             }
+    
             
         }
     }

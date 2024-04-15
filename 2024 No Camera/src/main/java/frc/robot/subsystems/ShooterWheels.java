@@ -39,9 +39,10 @@ public class ShooterWheels extends SubsystemBase {
     {
       Double[] valuesArray = {
       Double.valueOf(0), Double.valueOf(.175), 
-      Double.valueOf(1), Double.valueOf(0.2),
+      Double.valueOf(1), Double.valueOf(0.25),
       Double.valueOf(1.5), Double.valueOf(0.3),
-      Double.valueOf(5), Double.valueOf(0.3)
+      Double.valueOf(4), Double.valueOf(0.3),
+      Double.valueOf(5.2), Double.valueOf(0.4)
       };
     
     InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
@@ -49,6 +50,8 @@ public class ShooterWheels extends SubsystemBase {
     treeMap.put(valuesArray[2], valuesArray[3]);
     treeMap.put(valuesArray[4], valuesArray[5]);
     treeMap.put(valuesArray[6], valuesArray[7]);
+    treeMap.put(valuesArray[8], valuesArray[9]);
+
     return treeMap.get(distance);    
     } else {
       return 0;
@@ -95,6 +98,15 @@ public class ShooterWheels extends SubsystemBase {
     return encoder.getVelocity();
   }
 
+  public boolean WheelSpeedCheck()
+  {
+    if(getCurrentSpeed()>1050){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
 
   public void setTopBottom(double topPercent, double bottomPercent) {
     mTopRightMotor.set(topPercent);
@@ -106,6 +118,7 @@ public class ShooterWheels extends SubsystemBase {
 
   public void DashboardNumbers() {
     SmartDashboard.putNumber("Wheel Speeds", getCurrentSpeed());
+    SmartDashboard.putBoolean("Wheels Up To Speed", WheelSpeedCheck());
   }
 
 }

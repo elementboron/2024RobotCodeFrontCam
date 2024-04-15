@@ -106,7 +106,7 @@ public class LinearActuator extends SubsystemBase {
     } 
 
     
-    PIDController controller = new PIDController(0.1,0,0.00001);
+    PIDController controller = new PIDController(0.09,0,0.00001);
     controller.setSetpoint(desiredPosition);
     controller.setTolerance(tolerance);
 
@@ -135,7 +135,10 @@ public class LinearActuator extends SubsystemBase {
       Double.valueOf(3.61), Double.valueOf(-90),
       Double.valueOf(3.7), Double.valueOf(-95),
       Double.valueOf(3.92), Double.valueOf(-100),
-      Double.valueOf(4.2), Double.valueOf(-105)
+      //Double.valueOf(4.2), Double.valueOf(-105),
+      Double.valueOf(4.6), Double.valueOf(-104.2),
+      Double.valueOf(5), Double.valueOf(-130),
+      Double.valueOf(7.5), Double.valueOf(-138)
         };
     
     InterpolatingDoubleTreeMap treeMap = new InterpolatingDoubleTreeMap();
@@ -151,6 +154,10 @@ public class LinearActuator extends SubsystemBase {
     treeMap.put(valuesArray[18], valuesArray[19]);
     treeMap.put(valuesArray[20], valuesArray[21]);
     treeMap.put(valuesArray[22], valuesArray[23]);
+    treeMap.put(valuesArray[24], valuesArray[25]);
+    treeMap.put(valuesArray[26], valuesArray[27]);
+
+
 
 
 

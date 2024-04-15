@@ -7,29 +7,23 @@
 
 package frc.robot.commands;
 
-import java.util.function.DoubleSupplier;
-
-import org.photonvision.PhotonCamera;
-
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.*;
 
 
-public class StartLinearActuator extends Command
+public class TeleopHarvesterIntake extends Command
 {
-    private final LinearActuator mLinearActuator;
-    DoubleSupplier speedX;
-    DoubleSupplier speedY;
-
-    
+    private final IntakeDrive m_harvesterDrive;
+    IntakeWrist mWrist;
+    double speed;
     
     
 
-    public StartLinearActuator(LinearActuator subsystem, DoubleSupplier speedX, DoubleSupplier speedY)
+    public TeleopHarvesterIntake(IntakeDrive subsystem, double mSpeed, IntakeWrist mWrist)
     {
-        mLinearActuator = subsystem;        
-        this.speedX = speedX;
-        this.speedY = speedY;
+        m_harvesterDrive = subsystem;
+        speed = mSpeed;
+        this.mWrist = mWrist;
         
         addRequirements(subsystem);
     }
@@ -39,8 +33,14 @@ public class StartLinearActuator extends Command
     
     @Override
     public void execute() 
-    {   
-        mLinearActuator.setPercentOutput((speedX.getAsDouble() - speedY.getAsDouble()));
+    {  
+
+        if(mWrist.GetPosition() < 2)
+        {
+            m_harvesterDrive.setPercentOutput(0);
+        } else {
+            m_harvesterDrive.setPercentOutput(speed);
+        }
     }
 
     @Override

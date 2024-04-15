@@ -107,6 +107,12 @@
         {
           "type": "named",
           "data": {
+            "name": "Intake Off"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
             "name": "Wrist Toggle"
           }
         },
@@ -210,6 +216,12 @@
           }
         },
         {
+          "type": "named",
+          "data": {
+            "name": "Intake Off"
+          }
+        },
+        {
           "type": "race",
           "data": {
             "commands": [
@@ -237,7 +249,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.3
+            "waitTime": 0.4
           }
         },
         {

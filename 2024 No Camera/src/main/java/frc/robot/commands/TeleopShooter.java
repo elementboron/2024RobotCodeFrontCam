@@ -6,14 +6,14 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.PhotonVision;
 import frc.robot.subsystems.ShooterWheels;
 
-public class ShooterStop extends Command {
+public class TeleopShooter extends Command {
   private final ShooterWheels mShooter;
-  private final double mRightPercentOutput;
-  private final double mLeftPercentOutput;
+  private final DoubleSupplier mRightPercentOutput;
+  private final DoubleSupplier mLeftPercentOutput;
   boolean active;
   
 
-  public ShooterStop(ShooterWheels subsystem1, double rightPercentOutput, double leftPercentOutput) {
+  public TeleopShooter(ShooterWheels subsystem1, DoubleSupplier rightPercentOutput, DoubleSupplier leftPercentOutput) {
     mShooter = subsystem1;
     mRightPercentOutput = rightPercentOutput;
     mLeftPercentOutput = leftPercentOutput;
@@ -29,7 +29,7 @@ public class ShooterStop extends Command {
   public void execute() {
 
     //mShooter.setPercentOutput(mRightPercentOutput, mLeftPercentOutput, mfeeder);
-    mShooter.setPercentOutput(mRightPercentOutput, mLeftPercentOutput);
+    mShooter.setPercentOutput(mRightPercentOutput.getAsDouble(), mLeftPercentOutput.getAsDouble());
   }
 
   // Called once the command ends or is interrupted.
