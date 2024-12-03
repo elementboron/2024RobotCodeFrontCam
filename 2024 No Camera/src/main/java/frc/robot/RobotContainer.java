@@ -187,7 +187,7 @@ public class RobotContainer {
      */
     private void configureButtonBindings() {
 
-        zeroGyro.onTrue(new InstantCommand(() -> mSwerve.zeroHeading()));
+        zeroGyro.onTrue(new InstantCommand(() -> mSwerve.setHeading(new Rotation2d(Math.PI))));
 
         ShooterCharge.whileTrue(new ShooterStart(m_Wheels, mVision));
         ShooterCharge.onTrue(new ShooterCamActivate(mVision));
@@ -207,14 +207,14 @@ public class RobotContainer {
 
     }
 
-    /**
+    /**.
      * Use this to pass the autonomous command to the main {@link Robot} class.
      *
      * @return the command to run in autonomous
      */
     public Command getAutonomousCommand() {
 
-        return AutoBuilder.buildAuto("Red Far Side");
+        return AutoBuilder.buildAuto("Shoot and Sit Red"); 
 
     }
 }

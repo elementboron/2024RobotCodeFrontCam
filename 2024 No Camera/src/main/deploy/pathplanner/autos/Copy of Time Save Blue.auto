@@ -2,10 +2,10 @@
   "version": 1.0,
   "startingPose": {
     "position": {
-      "x": 15.77,
-      "y": 4.71
+      "x": 1.1,
+      "y": 5.55
     },
-    "rotation": 59.478254487739875
+    "rotation": 179.07115725628847
   },
   "command": {
     "type": "sequential",
@@ -18,9 +18,16 @@
           }
         },
         {
-          "type": "path",
+          "type": "race",
           "data": {
-            "pathName": "Far Side Shoot"
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Blue Straight To First"
+                }
+              }
+            ]
           }
         },
         {
@@ -34,15 +41,9 @@
                 }
               },
               {
-                "type": "named",
-                "data": {
-                  "name": "Aim Swerve At Speaker"
-                }
-              },
-              {
                 "type": "wait",
                 "data": {
-                  "waitTime": 0.8
+                  "waitTime": 0.7
                 }
               }
             ]
@@ -58,186 +59,167 @@
           "type": "named",
           "data": {
             "name": "Intake Out"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.2
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Wrist Toggle"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake In"
-                      }
-                    }
-                  ]
-                }
-              },
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Far Side Grab First"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wrist Toggle"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Far Side Shoot First"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.5
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim Shooter At Speaker"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim Swerve At Speaker"
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Intake Out"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.2
-          }
-        },
-        {
-          "type": "parallel",
-          "data": {
-            "commands": [
-              {
-                "type": "path",
-                "data": {
-                  "pathName": "Far Side Grab Second"
-                }
-              },
-              {
-                "type": "sequential",
-                "data": {
-                  "commands": [
-                    {
-                      "type": "wait",
-                      "data": {
-                        "waitTime": 1.0
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Wrist Toggle"
-                      }
-                    },
-                    {
-                      "type": "named",
-                      "data": {
-                        "name": "Intake In"
-                      }
-                    }
-                  ]
-                }
-              }
-            ]
-          }
-        },
-        {
-          "type": "named",
-          "data": {
-            "name": "Wrist Toggle"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "Far Side Shoot Second"
-          }
-        },
-        {
-          "type": "race",
-          "data": {
-            "commands": [
-              {
-                "type": "wait",
-                "data": {
-                  "waitTime": 1.4
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim Swerve At Speaker"
-                }
-              },
-              {
-                "type": "named",
-                "data": {
-                  "name": "Aim Shooter At Speaker"
-                }
-              }
-            ]
           }
         },
         {
           "type": "wait",
           "data": {
             "waitTime": 0.3
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake In"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "Blue Grab Second"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.05
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Wrist Toggle"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Shooter At Speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Swerve At Speaker"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 0.7
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 1.0
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake Out"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.4
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Intake In"
+          }
+        },
+        {
+          "type": "parallel",
+          "data": {
+            "commands": [
+              {
+                "type": "path",
+                "data": {
+                  "pathName": "Blue Grab Third"
+                }
+              },
+              {
+                "type": "sequential",
+                "data": {
+                  "commands": [
+                    {
+                      "type": "wait",
+                      "data": {
+                        "waitTime": 0.4
+                      }
+                    },
+                    {
+                      "type": "named",
+                      "data": {
+                        "name": "Wrist Toggle"
+                      }
+                    }
+                  ]
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Wrist Toggle"
+          }
+        },
+        {
+          "type": "race",
+          "data": {
+            "commands": [
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Shooter At Speaker"
+                }
+              },
+              {
+                "type": "named",
+                "data": {
+                  "name": "Aim Swerve At Speaker"
+                }
+              },
+              {
+                "type": "wait",
+                "data": {
+                  "waitTime": 1.2
+                }
+              }
+            ]
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {

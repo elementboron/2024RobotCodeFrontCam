@@ -25,6 +25,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.DriverStation.Alliance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
@@ -226,7 +227,8 @@ public class Swerve extends SubsystemBase {
             PIDController controllerNote = new PIDController(0.008,0,0.0000001);
             controllerNote.setTolerance(1);
             controllerNote.enableContinuousInput(-180, 180);
-            double speed = controllerNote.calculate(swerveOdometry.getPoseMeters().getRotation().getDegrees(), 135);
+            double desiredAngle = -170;
+            double speed = controllerNote.calculate(swerveOdometry.getPoseMeters().getRotation().getDegrees(), desiredAngle);
             noteDrive(new Translation2d(-translationVal, -strafeVal), speed * Constants.Swerve.maxSpeed, false, false);
 
             drive(
